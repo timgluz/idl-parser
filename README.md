@@ -1,5 +1,7 @@
 # idl-parser
 
+[![Build Status](https://travis-ci.org/timgluz/idl-parser.svg)](https://travis-ci.org/timgluz/idl-parser)
+
 **IDL-parser** is experimental project, which parses Jubatus (or Thrift's) IDL and turns them
 proper annotated [Pristmatic/Schema] dataobjects or function-skeleton.
 
