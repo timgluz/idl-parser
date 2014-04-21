@@ -1,0 +1,74 @@
+(* SERVICE parser to parse IDL service block *)
+(* source: http://wiki.msgpack.org/display/MSGPACK/Design+of+IDL  *)
+
+
+(* SERVICE BLOCK *)
+
+SERVICE_BLOCK = "service" <WSPACES> SERVICE_IDENT <WSPACES> <"{"> ( eps | WSPACES | SERVICE_CONTENT_SEQ) <"}">
+
+<SERVICE_CONTENT_SEQ> = SERVICE_CONTENT *{<WSPACES> SERVICE_CONTENT}
+SERVICE_CONTENT     = FUNCTION | INHERIT
+SERVICE_IDENT = NAME_IDENT ?[<":"> VERSION_IDENT]
+
+(* MESSAGE BLOCK *)
+
+MESSAGE_BLOCK = "message" <WSPACES> NAME_IDENT <WSPACES> ?[SUPER_CLASS] <"{"> (eps | WSPACES | FIELD_SEQ) <"}">
+SUPER_CLASS   = <"<"> <WSPACES> NAME_IDENT <WSPACES>
+
+(* EXCEPTION BLOCK *)
+
+EXCEPTION_BLOCK = "exception" <WSPACES> NAME_IDENT <WSPACES> ?[SUPER_CLASS] <"{"> (eps | WSPACES | FIELD_SEQ) <"}">
+
+(* ENUM BLOCK *)
+
+ENUM_BLOCK = "enum" <WSPACES> NAME_IDENT <WSPACES> <"{"> (eps | WSPACES | ENUM_FIELD_SEQ) <"}">
+
+<ENUM_FIELD_SEQ>  = ENUM_FIELD *{<WSPACES> ENUM_FIELD}
+ENUM_FIELD        = FIELD_IDENT <":"> <WSPACES> NAME_IDENT
+
+(* FUNCTION *)
+
+FUNCTION      = DATA_TYPE <WSPACES> NAME_IDENT FUNCTION_ARGS <WSPACES> ?[THROWABLES]
+FUNCTION_ARGS = <"("> FIELD_SEQ <")">
+
+
+(* FIELD *)
+
+<FIELD_SEQ>   = FIELD *{<WSPACES> FIELD}
+FIELD         = FIELD_IDENT <":"> <WSPACES> ?[FIELD_SPECIF] <WSPACES> DATA_TYPE <WSPACES> NAME_IDENT ?[INIT_VALUE]
+
+FIELD_SPECIF  = "optional" | "required"
+INIT_VALUE    = <WSPACES> <"="> <WSPACES> VALUE
+VALUE         = #"\w+"
+THROWABLES    = "throws" THROWABLE+
+THROWABLE     = NAME_IDENT
+
+(* INHERIT *)
+
+INHERIT       = "inherit" <WSPACES> ("*" | NAME_IDENT | FUNCTION)
+
+
+(* IDENTIFICATORS  *)
+
+NAME_IDENT    = #"\w+"
+VERSION_IDENT = #"\w+"
+FIELD_IDENT   = #"\d+"
+
+(* DATATYPES *)
+
+DATA_TYPE         = PRIMITIVE_TYPE | COLLECTION
+<PRIMITIVE_TYPE>  = "void" | "bool" | "raw" | "string" | SIGNED_INT | UNSIGNED_INT | FLOAT
+
+<SIGNED_INT>      = "byte" | "short" | "int" | "long"
+<UNSIGNED_INT>    = "ubyte" | "ushort" | "uint" | "ulong"
+<FLOAT>           = "float" | "double"
+<COLLECTION>      = LIST | MAP
+<LIST>            = "list" <"<"> PRIMITIVE_TYPE <">">
+<MAP>             = "map" <"<"> PRIMITIVE_TYPE <","> *{WSPACES} PRIMITIVE_TYPE <">">
+
+(* PRIMITIVES  *)
+
+LINECOMMENT   = #"^#[\s|\S]*.\n?$"
+<WSPACES>     = #"\s+"
+LITERAL       = #"\w+"
+
