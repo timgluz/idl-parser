@@ -21,7 +21,17 @@
       (parser "ulong")  => [:DATA_TYPE "ulong"]
       (parser "float")  => [:DATA_TYPE "float"]
       (parser "double") => [:DATA_TYPE "double"]
-   (fact "parses datacollection type declarations"
-      (parser "list<int>")    => [:DATA_TYPE "list" "int"]
-      (parser "list<float>")  => [:DATA_TYPE "list" "float"]
-      (parser "map<int,int>") => [:DATA_TYPE "map" "int" "int"])))
+    (fact "parses datacollection type declarations"
+      (parser "list<int>")    => [:DATA_TYPE [:COLLECTION "list" [:DATA_TYPE "int"]]]
+      (parser "list<float>")  => [:DATA_TYPE [:COLLECTION "list" [:DATA_TYPE "float"]]]
+      (parser "map<int,int>") => [:DATA_TYPE
+                                    [:COLLECTION "map"
+                                      [:DATA_TYPE "int"] [:DATA_TYPE "int"]]])
+    (fact "parses user defined data-types"
+      (parser "user_type") => [:DATA_TYPE "user_type"]
+      (parser "list<user_type2>") =>
+        [:DATA_TYPE [:COLLECTION "list" [:DATA_TYPE "user_type2"]]]
+      (parser "map<user_type3, user_type4>") =>
+        [:DATA_TYPE
+          [:COLLECTION "map"
+            [:DATA_TYPE "user_type3"] [:DATA_TYPE "user_type4"]]])))

@@ -82,7 +82,7 @@
   "remove all comments, newline characters
   and repeating multiple whitespaces"
   [text]
-  (-> text remove-comments remove-newlines replace-whitespace))
+  (-> text remove-comments remove-newlines replace-whitespace string/trim))
 
 (defn split-by-blocks
   "splits IDL text into <name> {IDL-notation} block sequence,
@@ -98,5 +98,4 @@
           (recur (subs cur-text (inc end))
                  (conj results
                        (string/trim (subs cur-text 0 (inc end))))))))))
-
 

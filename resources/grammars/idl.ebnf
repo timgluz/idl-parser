@@ -55,16 +55,21 @@ VERSION_IDENT = #"\w+"
 FIELD_IDENT   = #"\d+"
 
 (* DATATYPES *)
+(* DATA_TYPE         = PRIMITIVE_TYPE | COLLECTION | USER_TYPE *)
 
-DATA_TYPE         = PRIMITIVE_TYPE | COLLECTION
+DATA_TYPE         = #"\w+" | COLLECTION
+COLLECTION     = LIST | MAP
+<LIST>            = "list" <"<"> DATA_TYPE <">">
+<MAP>             = "map" <"<"> DATA_TYPE <","> ?[<WSPACES>] DATA_TYPE <">">
+
+(* reduntant after i found out that IDL supports also user-defined types *)
+(* therefore i dont check anymore correctness types *)
 <PRIMITIVE_TYPE>  = "void" | "bool" | "raw" | "string" | SIGNED_INT | UNSIGNED_INT | FLOAT
-
 <SIGNED_INT>      = "byte" | "short" | "int" | "long"
 <UNSIGNED_INT>    = "ubyte" | "ushort" | "uint" | "ulong"
 <FLOAT>           = "float" | "double"
-<COLLECTION>      = LIST | MAP
-<LIST>            = "list" <"<"> PRIMITIVE_TYPE <">">
-<MAP>             = "map" <"<"> PRIMITIVE_TYPE <","> *{WSPACES} PRIMITIVE_TYPE <">">
+(* show up USER_TYPE, nice way to separate native datatypes from user defined ones *)
+USER_TYPE         = #"\w+"
 
 (* PRIMITIVES  *)
 
