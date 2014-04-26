@@ -48,8 +48,9 @@
                           :else (symbol (capitalize-name field-type)))]
           [(symbol field-name) :- data-type])))))
 
-(defn to-schema-record
+(defn to-message
   "turns message AST into Prismatic's annotated record
+  It works for message AST and exception AST
   Usage:
     (def msg-ast (idl-parser.core/parse-one \"message Test {1: int key}\")
     (to-schema-record msg-ast)
@@ -108,3 +109,26 @@
                       :when (= :FUNCTION (first item-ast))]
                   (to-schema-function item-ast))
      :inherits []}))
+
+(defn to-enum
+  "translates enum AST into plain Clojure vector.
+  Usage:
+    (def enum-ast
+      [:ENUM_BLOCK
+        [:NAME_IDENT \"T\"]
+        [:ENUM_FIELD [:FIELD_IDENT \"0\"] [:NAME_IDENT \"RED\"]]
+        [:ENUM_FIELD [:FIELD_IDENT \"1\"] [:NAME_IDENT \"YELLOW\"]]])
+    (to-enum enum-ast)
+  Returns:
+    a Clojure vector binded to the defined name"
+  [enum-ast]
+  (let [enum-tree (zip/vector-zip enum-ast)
+        enum-name (-> enum-tree zip/down zip/right zip/node second)
+        enum-items (-> enum-tree zip/down zip/rights rest) ; skip name field
+        enum-vals  (doall
+                    (for [field enum-items
+                        :when (= :ENUM_FIELD (first field))]
+                      (-> field last second)))]
+    `(def
+        ~(symbol (capitalize-name (str enum-name "Enum")))
+        ~@(vec enum-vals))))

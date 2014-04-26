@@ -59,20 +59,20 @@
 (facts "to-schema-record"
   (fact "converts properly formated message's AST into schema's record"
     (str
-      (translator/to-schema-record
+      (translator/to-message
         [:MESSAGE_BLOCK
           [:NAME_IDENT "estimate_result"]
           [:FIELD [:FIELD_IDENT "0"] [:DATA_TYPE "string"] [:NAME_IDENT "label"]]]))
      => "(schema.core/defrecord EstimateResult [label :- java.lang.String])"
     (str
-      (translator/to-schema-record
+      (translator/to-message
         [:MESSAGE_BLOCK
           [:NAME_IDENT "estimate_result"]
           [:FIELD [:FIELD_IDENT "0"] [:DATA_TYPE "string"] [:NAME_IDENT "key"]]
           [:FIELD [:FIELD_IDENT "0"] [:DATA_TYPE "int"] [:NAME_IDENT "value"]]]))
      => "(schema.core/defrecord EstimateResult [key :- java.lang.String value :- java.lang.Integer])"
     (str
-      (translator/to-schema-record
+      (translator/to-message
         [:MESSAGE_BLOCK
           [:NAME_IDENT "estimate_result"]
           [:FIELD [:FIELD_IDENT "0"] [:DATA_TYPE "string"] [:NAME_IDENT "key"]]
@@ -112,3 +112,12 @@
           [:FUNCTION [:DATA_TYPE "bool"] [:NAME_IDENT "clear"] [:FUNCTION_ARGS]]]))
     => "{:service \"classifier\", :version \"classifier\", :functions ((schema.core/defn train :- java.lang.Integer [data :- [java.lang.Integer]]) (schema.core/defn clear :- java.lang.Boolean [])), :inherits []}" ))
 
+(facts "to-enum"
+  (fact "translates enum AST into binded clojure list"
+    (str
+      (translator/to-enum
+        [:ENUM_BLOCK
+          [:NAME_IDENT "T"]
+          [:ENUM_FIELD [:FIELD_IDENT "1"] [:NAME_IDENT "RED"]]
+          [:ENUM_FIELD [:FIELD_IDENT "2"] [:NAME_IDENT "YELLOW"]]]))
+    => "(def TEnum \"RED\" \"YELLOW\")"))
