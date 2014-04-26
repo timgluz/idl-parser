@@ -57,10 +57,10 @@ FIELD_IDENT   = #"\d+"
 (* DATATYPES *)
 (* DATA_TYPE         = PRIMITIVE_TYPE | COLLECTION | USER_TYPE *)
 
-DATA_TYPE         = #"\w+" | COLLECTION
+DATA_TYPE         = #"\w+" | LIST | MAP
 COLLECTION     = LIST | MAP
-<LIST>            = "list" <"<"> DATA_TYPE <">">
-<MAP>             = "map" <"<"> DATA_TYPE <","> ?[<WSPACES>] DATA_TYPE <">">
+LIST            = <"list"> <"<"> DATA_TYPE <">">
+MAP             = <"map"> <"<"> DATA_TYPE <","> ?[<WSPACES>] DATA_TYPE <">">
 
 (* reduntant after i found out that IDL supports also user-defined types *)
 (* therefore i dont check anymore correctness types *)
