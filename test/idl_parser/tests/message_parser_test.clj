@@ -8,15 +8,13 @@
         msg-parser (insta/parser grammar :start :MESSAGE_BLOCK)]
     (fact "parses a minimal message blocks"
       (msg-parser "message TEST {}") =>
-        [:MESSAGE_BLOCK "message" [:NAME_IDENT "TEST"]]
+        [:MESSAGE_BLOCK [:NAME_IDENT "TEST"]]
       (msg-parser "message TEST < SUPER {}") =>
         [:MESSAGE_BLOCK
-          "message"
           [:NAME_IDENT "TEST"]
           [:SUPER_CLASS [:NAME_IDENT "SUPER"]]]
       (msg-parser "message TEST {1: string key}") =>
         [:MESSAGE_BLOCK
-         "message"
          [:NAME_IDENT "TEST"]
          [:FIELD
            [:FIELD_IDENT "1"]
@@ -25,7 +23,6 @@
     (fact "parses a multiple fields"
       (msg-parser "message TEST {1: int key 2: int value}") =>
         [:MESSAGE_BLOCK
-         "message"
          [:NAME_IDENT "TEST"]
          [:FIELD
            [:FIELD_IDENT "1"]

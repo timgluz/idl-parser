@@ -1,7 +1,7 @@
 (ns idl-parser.core
-  (:require [idl-parser.lexer]
-            [idl-parser.parser]
-            [insta]))
+  (:require [idl-parser.lexer :as lexer]
+            [instaparse.core :as insta]
+            [clojure.java.io :as io]))
 
 (def grammar (slurp (io/resource "grammars/idl.ebnf")))
 (def parsers {:service (insta/parser grammar :start :SERVICE_BLOCK)

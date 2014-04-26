@@ -11,12 +11,11 @@
             result (parser test-string)]
         result =not=> nil?
         (parser "service TEST {}") =>
-          [:SERVICE_BLOCK "service"
+          [:SERVICE_BLOCK
             [:SERVICE_IDENT [:NAME_IDENT "TEST"]]]))
     (fact "parses blocks where a singular function has no args"
       (parser "service TEST {void set()}") =>
          [:SERVICE_BLOCK
-          "service"
           [:SERVICE_IDENT [:NAME_IDENT "TEST"]]
           [:SERVICE_CONTENT
             [:FUNCTION
@@ -26,7 +25,6 @@
     (fact "parses service blocks with a singular function "
       (parser "service TEST {int get(1: int key)}") =>
         [:SERVICE_BLOCK
-          "service"
           [:SERVICE_IDENT [:NAME_IDENT "TEST"]]
           [:SERVICE_CONTENT
             [:FUNCTION
@@ -39,7 +37,6 @@
                             [:NAME_IDENT "key"]]]]]]
       (parser "service TEST {void set(1: int key = 0)}") =>
         [:SERVICE_BLOCK
-          "service"
           [:SERVICE_IDENT [:NAME_IDENT "TEST"]]
           [:SERVICE_CONTENT
             [:FUNCTION
@@ -54,7 +51,6 @@
     (fact "parses function with multiple arguments"
       (parser "service TEST {void set(1: int key 2: int value)}") =>
         [:SERVICE_BLOCK
-          "service"
           [:SERVICE_IDENT [:NAME_IDENT "TEST"]]
           [:SERVICE_CONTENT
               [:FUNCTION
@@ -72,7 +68,6 @@
     (fact "parses multiple function blocks"
       (parser "service TEST {void set(1: int key) int get(1: int key)}") =>
        [:SERVICE_BLOCK
-        "service"
         [:SERVICE_IDENT [:NAME_IDENT "TEST"]]
         [:SERVICE_CONTENT
         [:FUNCTION
@@ -95,24 +90,20 @@
     (facts "parses inherit blocks with *"
       (parser "service TEST {inherit *}") =>
         [:SERVICE_BLOCK
-          "service"
           [:SERVICE_IDENT [:NAME_IDENT "TEST"]]
-          [:SERVICE_CONTENT [:INHERIT "inherit" "*"]]])
+          [:SERVICE_CONTENT [:INHERIT "*"]]])
     (facts "parses inherit block with function name"
       (parser "service TEST {inherit get}") =>
         [:SERVICE_BLOCK
-          "service"
           [:SERVICE_IDENT [:NAME_IDENT "TEST"]]
-          [:SERVICE_CONTENT [:INHERIT "inherit" [:NAME_IDENT "get"]]]])
+          [:SERVICE_CONTENT [:INHERIT [:NAME_IDENT "get"]]]])
 
     (facts "parses inherit block with function"
       (parser "service TEST {inherit void set()}") =>
         [:SERVICE_BLOCK
-         "service"
          [:SERVICE_IDENT [:NAME_IDENT "TEST"]]
          [:SERVICE_CONTENT
            [:INHERIT
-              "inherit"
               [:FUNCTION
                   [:DATA_TYPE "void"]
                   [:NAME_IDENT "set"]
@@ -120,18 +111,16 @@
     (facts "parses multiple inherits blocks"
       (parser "service TEST {inherit get inherit set}") =>
         [:SERVICE_BLOCK
-          "service"
           [:SERVICE_IDENT [:NAME_IDENT "TEST"]]
-          [:SERVICE_CONTENT [:INHERIT "inherit" [:NAME_IDENT "get"]]]
-          [:SERVICE_CONTENT [:INHERIT "inherit" [:NAME_IDENT "set"]]]])
+          [:SERVICE_CONTENT [:INHERIT [:NAME_IDENT "get"]]]
+          [:SERVICE_CONTENT [:INHERIT [:NAME_IDENT "set"]]]])
     (facts "parses blocks mixed with function and inherit"
       (parser "service TEST {void set() inherit get}") =>
         [:SERVICE_BLOCK
-          "service"
           [:SERVICE_IDENT [:NAME_IDENT "TEST"]]
           [:SERVICE_CONTENT
              [:FUNCTION
                  [:DATA_TYPE "void"]
                  [:NAME_IDENT "set"]
                  [:FUNCTION_ARGS]]]
-          [:SERVICE_CONTENT [:INHERIT "inherit" [:NAME_IDENT "get"]]]])))
+          [:SERVICE_CONTENT [:INHERIT [:NAME_IDENT "get"]]]])))
