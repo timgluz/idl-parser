@@ -19,6 +19,24 @@
     (map string/capitalize)
     (apply str)))
 
+(defn translate-datatype
+  "builds proper datatype definitions for datatype AST"
+  [type-node]
+  (if (string? type-node)
+    ;; handle primitive types
+    (if (contains? datatypes type-node)
+      (get datatypes type-node)
+      ;;if datatype doesnt exist, then handle it as userdefined type/Record
+      (symbol (capitalize-name type-node)))
+    ;; handle collections
+    (let [[field-name field-type field-type2] type-node]
+      (case field-name
+        :DATA_TYPE (translate-datatype field-type)
+        :LIST [(translate-datatype field-type)]
+        :MAP {(translate-datatype field-type)
+            (translate-datatype field-type2)}
+        [:unsupported :collection :type]))))
+
 (defn to-schema-fields
   "turns AST of message's fields into Schema field list
   Input has to be vector of fields AST as it shown here
@@ -35,18 +53,9 @@
       (for [field field-items]
         (let [field-node (zip/vector-zip field)
               type-node  (-> field-node zip/down zip/right zip/right zip/node)
-              field-type (second type-node)
               field-name (-> field-node zip/down zip/rightmost zip/node second)
-              data-type (cond
-                          (contains? datatypes field-type)
-                            (get datatypes field-type)
-                          (= :LIST (first field-type))
-                            [(get datatypes (-> field-type second second))]
-                          (= :MAP (first field-type))
-                            {(get datatypes (-> field-type second second))
-                             (get datatypes (-> field-type last second))}
-                          :else (symbol (capitalize-name field-type)))]
-          [(symbol field-name) :- data-type])))))
+              data-type  (translate-datatype type-node)]
+          [(symbol field-name) :- (translate-datatype type-node)])))))
 
 (defn to-message
   "turns message AST into Prismatic's annotated record

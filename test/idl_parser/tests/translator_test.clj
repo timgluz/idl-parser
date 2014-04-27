@@ -14,6 +14,39 @@
   (fact "keeps CamelCased names as it is"
     (translator/capitalize-name "AbcDef") => "AbcDef"))
 
+(facts "translate-datatype"
+  (fact "builds correct primitives"
+    (translator/translate-datatype [:DATA_TYPE "int"])
+    => java.lang.Integer
+    (translator/translate-datatype [:DATA_TYPE "long"])
+    => java.lang.Long
+    (translator/translate-datatype [:DATA_TYPE "string"])
+    => java.lang.String)
+  (fact "handles userdefined types"
+    (str (translator/translate-datatype [:DATA_TYPE "datum"]))
+    => "Datum"
+    (str (translator/translate-datatype [:DATA_TYPE "labeled_datum"]))
+    => "LabeledDatum")
+  (fact "builds correct collection of primitives"
+    (translator/translate-datatype [:DATA_TYPE [:LIST [:DATA_TYPE "int"]]])
+    => [java.lang.Integer]
+    (translator/translate-datatype [:DATA_TYPE [:LIST [:DATA_TYPE "string"]]])
+    => [java.lang.String]
+    (translator/translate-datatype [:DATA_TYPE [:LIST [:LIST [:DATA_TYPE "int"]]]])
+    => [[java.lang.Integer]]
+    (translator/translate-datatype [:DATA_TYPE [:MAP [:DATA_TYPE "int"][:DATA_TYPE "int"]]])
+    => {java.lang.Integer java.lang.Integer})
+    (translator/translate-datatype
+      [:DATA_TYPE
+        [:MAP
+          [:DATA_TYPE "int"]
+          [:DATA_TYPE [:LIST [:DATA_TYPE "int"]]]]])
+    => {java.lang.Integer [java.lang.Integer]}
+  (fact "builds correct collection of userdefined types"
+    (str
+      (translator/translate-datatype [:DATA_TYPE [:LIST [:DATA_TYPE "labeled_datum"]]]))
+    => "[LabeledDatum]"))
+
 
 (facts "to-schema-fields"
   (fact "builds correct list of field and datatypes"
